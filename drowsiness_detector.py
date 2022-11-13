@@ -1,5 +1,3 @@
-#아직 수정중!
-
 import numpy as np
 import imutils
 import time
@@ -14,8 +12,8 @@ from threading import Thread
 from threading import Timer
 from check_cam_fps import check_fps
 import make_train_data as mtd
-#import light_remover as lr
-#import ringing_alarm as alarm
+import light_remover as lr
+import ringing_alarm as alarm
 
 def eye_aspect_ratio(eye):
     A = dist.euclidean(eye[1], eye[5])
@@ -59,8 +57,8 @@ def init_close_ear():
 
 def init_message() :
     print("init_message")
-    #alarm.sound_alarm("init_sound.mp3")
-    
+    alarm.sound_alarm("init_sound.mp3")
+
 #1. Variables for checking EAR
 OPEN_EAR=0
 EAR_THRESH=0
@@ -109,12 +107,11 @@ th_close = Thread(target = init_close_ear)
 th_close.deamon = True
 th_close.start()
 
-
 while True:
     frame = vs.read()
     frame = imutils.resize(frame, width = 400)
     
-    #L, gray = lr.light_removing(frame)
+    L, gray = lr.light_removing(frame)
     
     rects = detector(gray,0)
     
