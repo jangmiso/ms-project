@@ -98,6 +98,7 @@ class MainScreen(QDialog):
         self.bt_mypage.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_1))
         self.bt_class.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_2))
         self.bt_bestworst.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_3))
+        self.bt_change.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_4))
         
         
         self.label_gold = QtWidgets.QLabel(self.page_3)
