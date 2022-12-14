@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1199</width>
-    <height>800</height>
+    <height>789</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,7 +47,7 @@ font: 57 11pt &quot;Noto Sans CJK HK Medium&quot;;</string>
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>150</y>
+     <y>140</y>
      <width>1001</width>
      <height>651</height>
     </rect>
@@ -59,7 +59,7 @@ font: 57 11pt &quot;Noto Sans CJK HK Medium&quot;;</string>
     <number>0</number>
    </property>
    <property name="currentIndex">
-    <number>4</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="page">
     <widget class="QPushButton" name="pushButton">
@@ -102,11 +102,14 @@ QTabWidget::pane{border:0;}
 </string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
+     </property>
+     <property name="usesScrollButtons">
+      <bool>true</bool>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
-       <string>tab1</string>
+       <string>기간 조회</string>
       </attribute>
       <widget class="QLabel" name="topbg_3">
        <property name="geometry">
@@ -125,131 +128,10 @@ background-color:rgb(255, 255, 255)</string>
         <string/>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_7">
+      <widget class="QPushButton" name="pushButton_view">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>30</y>
-         <width>91</width>
-         <height>30</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 29 14pt &quot;Noto Sans CJK HK DemiLight&quot;;</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>1월</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>2월</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>3월</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>4월</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>5월</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>6월</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>7월</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>8월</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>9월</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>10월</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>11월</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>12월</string>
-        </property>
-       </item>
-      </widget>
-      <widget class="QComboBox" name="comboBox_8">
-       <property name="geometry">
-        <rect>
-         <x>120</x>
-         <y>30</y>
-         <width>91</width>
-         <height>30</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 29 14pt &quot;Noto Sans CJK HK DemiLight&quot;;</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>1주</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>2주</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>3주</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>4주</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>5주</string>
-        </property>
-       </item>
-      </widget>
-      <widget class="MplWidget" name="MplWidget" native="true">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>80</y>
-         <width>891</width>
-         <height>431</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_generate_random_signal">
-       <property name="geometry">
-        <rect>
-         <x>230</x>
+         <x>290</x>
          <y>30</y>
          <width>91</width>
          <height>30</height>
@@ -259,10 +141,148 @@ background-color:rgb(255, 255, 255)</string>
         <string>조회하기</string>
        </property>
       </widget>
+      <widget class="QDateEdit" name="dateEdit">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>30</y>
+         <width>110</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="dateTime">
+        <datetime>
+         <hour>0</hour>
+         <minute>0</minute>
+         <second>0</second>
+         <year>2022</year>
+         <month>3</month>
+         <day>1</day>
+        </datetime>
+       </property>
+      </widget>
+      <widget class="QDateEdit" name="dateEdit_2">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>30</y>
+         <width>110</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="dateTime">
+        <datetime>
+         <hour>0</hour>
+         <minute>0</minute>
+         <second>0</second>
+         <year>2022</year>
+         <month>12</month>
+         <day>9</day>
+        </datetime>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_19">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>30</y>
+         <width>21</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string>~</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QTableWidget" name="tableWidget_5">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>891</width>
+         <height>431</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 29 15pt &quot;Noto Sans CJK HK DemiLight&quot;;</string>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAsNeeded</enum>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustToContents</enum>
+       </property>
+       <property name="defaultDropAction">
+        <enum>Qt::IgnoreAction</enum>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>false</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::NoSelection</enum>
+       </property>
+       <property name="textElideMode">
+        <enum>Qt::ElideRight</enum>
+       </property>
+       <property name="showGrid">
+        <bool>true</bool>
+       </property>
+       <property name="sortingEnabled">
+        <bool>false</bool>
+       </property>
+       <attribute name="horizontalHeaderCascadingSectionResizes">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>222</number>
+       </attribute>
+       <attribute name="horizontalHeaderHighlightSections">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>날짜</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>교시</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>과목</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>점수</string>
+        </property>
+       </column>
+      </widget>
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>tab2</string>
+       <string>월별 통계</string>
       </attribute>
       <widget class="QLabel" name="topbg_4">
        <property name="geometry">
@@ -387,10 +407,61 @@ background-color:rgb(255, 255, 255)</string>
         </property>
        </item>
       </widget>
+      <widget class="QPushButton" name="pushButton_4">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>30</y>
+         <width>91</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>조회하기</string>
+       </property>
+      </widget>
+      <widget class="MplWidget" name="MplWidget_2" native="true">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>891</width>
+         <height>431</height>
+        </rect>
+       </property>
+       <widget class="QLabel" name="label_20">
+        <property name="geometry">
+         <rect>
+          <x>350</x>
+          <y>10</y>
+          <width>201</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>PibotoLt</family>
+          <pointsize>16</pointsize>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </widget>
      </widget>
      <widget class="QWidget" name="tab_3">
       <attribute name="title">
-       <string>tab3</string>
+       <string>세부내역</string>
       </attribute>
       <widget class="QLabel" name="topbg_7">
        <property name="geometry">
@@ -412,7 +483,7 @@ background-color:rgb(255, 255, 255)</string>
       <widget class="QComboBox" name="comboBox_11">
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>80</x>
          <y>30</y>
          <width>221</width>
          <height>30</height>
@@ -423,7 +494,7 @@ background-color:rgb(255, 255, 255)</string>
        </property>
        <item>
         <property name="text">
-         <string>과목선택?</string>
+         <string/>
         </property>
        </item>
       </widget>
@@ -439,12 +510,53 @@ background-color:rgb(255, 255, 255)</string>
        <property name="styleSheet">
         <string notr="true">font: 29 15pt &quot;Noto Sans CJK HK DemiLight&quot;;</string>
        </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAsNeeded</enum>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustToContents</enum>
+       </property>
+       <property name="defaultDropAction">
+        <enum>Qt::IgnoreAction</enum>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>false</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::NoSelection</enum>
+       </property>
+       <property name="textElideMode">
+        <enum>Qt::ElideRight</enum>
+       </property>
+       <property name="showGrid">
+        <bool>true</bool>
+       </property>
+       <property name="sortingEnabled">
+        <bool>false</bool>
+       </property>
+       <attribute name="horizontalHeaderCascadingSectionResizes">
+        <bool>true</bool>
+       </attribute>
        <attribute name="horizontalHeaderDefaultSectionSize">
-        <number>220</number>
+        <number>150</number>
+       </attribute>
+       <attribute name="horizontalHeaderHighlightSections">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
        </attribute>
        <column>
         <property name="text">
          <string>날짜</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>교시</string>
         </property>
        </column>
        <column>
@@ -454,14 +566,158 @@ background-color:rgb(255, 255, 255)</string>
        </column>
        <column>
         <property name="text">
+         <string>사유</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
          <string>가/감점</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string>사유</string>
+         <string>점수</string>
         </property>
        </column>
+      </widget>
+      <widget class="QLabel" name="label_16">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>30</y>
+         <width>41</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string>과목</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>30</y>
+         <width>91</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>조회하기</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_7">
+      <attribute name="title">
+       <string>과목별 통계</string>
+      </attribute>
+      <widget class="QLabel" name="topbg_13">
+       <property name="geometry">
+        <rect>
+         <x>-10</x>
+         <y>10</y>
+         <width>931</width>
+         <height>521</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-radius:20px;
+background-color:rgb(255, 255, 255)</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="MplWidget" name="MplWidget_5" native="true">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>891</width>
+         <height>431</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="comboBox_20">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>30</y>
+         <width>201</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Noto Sans CJK HK DemiLight</family>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_8">
+       <property name="geometry">
+        <rect>
+         <x>290</x>
+         <y>30</y>
+         <width>91</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>조회하기</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_18">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>30</y>
+         <width>41</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>PibotoLt</family>
+         <pointsize>14</pointsize>
+         <italic>false</italic>
+        </font>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string>과목</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
       </widget>
      </widget>
     </widget>
@@ -1182,7 +1438,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/gold-medal.png</pixmap>
+      <pixmap>:/icon/디자인/gold-medal.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1204,7 +1460,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/silver-medal.png</pixmap>
+      <pixmap>:/icon/디자인/silver-medal.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1226,7 +1482,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/bronze.png</pixmap>
+      <pixmap>:/icon/디자인/bronze.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1248,7 +1504,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/gold-medal.png</pixmap>
+      <pixmap>:/icon/디자인/gold-medal.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1270,7 +1526,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/silver-medal.png</pixmap>
+      <pixmap>:/icon/디자인/silver-medal.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1292,7 +1548,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/bronze.png</pixmap>
+      <pixmap>:/icon/디자인/bronze.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1589,6 +1845,9 @@ font: 29 16pt &quot;Noto Sans CJK HK DemiLight&quot;;</string>
      <property name="styleSheet">
       <string notr="true">font: 29 14pt &quot;Noto Sans CJK HK DemiLight&quot;;</string>
      </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_4">
      <property name="geometry">
@@ -1601,6 +1860,9 @@ font: 29 16pt &quot;Noto Sans CJK HK DemiLight&quot;;</string>
      </property>
      <property name="styleSheet">
       <string notr="true">font: 29 14pt &quot;Noto Sans CJK HK DemiLight&quot;;</string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
      </property>
     </widget>
     <widget class="QComboBox" name="comboBox_14">
@@ -1633,6 +1895,11 @@ font: 29 16pt &quot;Noto Sans CJK HK DemiLight&quot;;</string>
      <item>
       <property name="text">
        <string>시스템공학과</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>전자통신공학과</string>
       </property>
      </item>
      <item>
@@ -1956,7 +2223,7 @@ background-color:rgb(247, 133, 62);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap resource="myres.qrc">:/icon/디자인/coin (1).png</pixmap>
+     <pixmap>:/icon/디자인/coin (1).png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1998,9 +2265,9 @@ background-color:rgb(247, 133, 62);</string>
     <property name="font">
      <font>
       <pointsize>14</pointsize>
-      <weight>75</weight>
-      <italic>true</italic>
-      <bold>true</bold>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
      </font>
     </property>
     <property name="styleSheet">
@@ -2038,7 +2305,7 @@ background-color:rgb(247, 133, 62);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap resource="myres.qrc">:/icon/디자인/user (2).png</pixmap>
+     <pixmap>:/icon/디자인/user (2).png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -2056,9 +2323,9 @@ background-color:rgb(247, 133, 62);</string>
     <property name="font">
      <font>
       <pointsize>14</pointsize>
-      <weight>75</weight>
-      <italic>true</italic>
-      <bold>true</bold>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
      </font>
     </property>
     <property name="styleSheet">
