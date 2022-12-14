@@ -194,7 +194,7 @@ class MainScreen(QDialog):
         new_pw = self.lineEdit_3.text()
         new_pw2 = self.lineEdit_4.text()
         if new_pw == new_pw2:
-            cur.execute("update 생도 set 비밀번호221={} where 교번={}".format(new_pw, self.user))
+            cur.execute("update 생도 set 비밀번호='{}' where 교번={}".format(new_pw, self.user))
             conn.commit()
             QMessageBox.information(self, '비밀번호 변경 완료', '비밀번호 변경이 완료되었습니다!')
 
