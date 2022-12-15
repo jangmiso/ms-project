@@ -153,6 +153,9 @@ class MainScreen(QDialog):
             self.comboBox_11.addItem(sub[0])
         self.pushButton_2.clicked.connect(self.load_table)
             
+        #명예의 전당
+        self.pushButton_best3.clicked.connect(self.view_best3)
+        self.pushButton_worst3.clicked.connect(self.view_worst3)
         
         self.label_gold = QtWidgets.QLabel(self.page_3)
         self.label_gold.setGeometry(QtCore.QRect(40, 180, 70, 70))
@@ -338,6 +341,43 @@ class MainScreen(QDialog):
             for j,item  in enumerate(line):
                 self.tableWidget_2.setItem(i, j, QTableWidgetItem(str(item)))
                 self.tableWidget_2.item(i, j).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+    
+    
+    def view_best3(self):
+        year = self.comboBox.currentText()[:-1]
+        mon = self.comboBox_2.currentText()[:-1]
+        if len(mon)==1:
+            mon='0'+mon
+        cur.execute("select 생도.전공, 생도.기수, 생도.중대, 생도.이름, avg(점수.점수) from 점수,수강,과목,생도 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 수강.교번=생도.교번 and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by 수강.교번 order by avg(점수.점수) desc".format(year,mon))
+        result = cur.fetchall()
+        
+        if result==():
+            self.label_30.setText('')
+            self.label_31.setText('조회 결과 없음')
+            self.label_32.setText('')
+        else:
+            self.label_30.setText('{} {}.{}.{}  {:.2f}점'.format(result[0][0],result[0][1],result[0][2],result[0][3],result[0][4]))
+            self.label_31.setText('{} {}.{}.{}  {:.2f}점'.format(result[1][0],result[1][1],result[1][2],result[1][3],result[1][4]))
+            self.label_32.setText('{} {}.{}.{}  {:.2f}점'.format(result[2][0],result[2][1],result[2][2],result[2][3],result[2][4]))
+        
+    
+    def view_worst3(self):
+        year = self.comboBox_4.currentText()[:-1]
+        mon = self.comboBox_5.currentText()[:-1]
+        if len(mon)==1:
+            mon='0'+mon
+        cur.execute("select 생도.전공, 생도.기수, 생도.중대, 생도.이름, avg(점수.점수) from 점수,수강,과목,생도 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 수강.교번=생도.교번 and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by 수강.교번 order by avg(점수.점수)".format(year,mon))
+        result = cur.fetchall()
+        
+        if result==():
+            self.label_33.setText('')
+            self.label_34.setText('조회 결과 없음')
+            self.label_35.setText('')
+        else:
+            self.label_33.setText('{} {}.{}.{}  {:.2f}점'.format(result[0][0],result[0][1],result[0][2],result[0][3],result[0][4]))
+            self.label_34.setText('{} {}.{}.{}  {:.2f}점'.format(result[1][0],result[1][1],result[1][2],result[1][3],result[1][4]))
+            self.label_35.setText('{} {}.{}.{}  {:.2f}점'.format(result[2][0],result[2][1],result[2][2],result[2][3],result[2][4]))
+            
         
 
 class Stream_thread(QtCore.QThread):
@@ -375,3 +415,4 @@ try:
     sys.exit(app.exec_())
 except:
     print("Exiting")
+
