@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvas as FigureCanvas
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
+from matplotlib import font_manager
 from mplwidget import MplWidget
 
 from scipy.spatial import distance as dist
@@ -18,7 +19,6 @@ from threading import Thread
 from threading import Timer
 
 import matplotlib as mpl
-import matplotlib.font_manager as fm
 import numpy as np
 import random
 import time
@@ -32,17 +32,17 @@ import dlib
 from check_cam_fps import check_fps
 import make_train_data as mtd
 import light_remover as lr
-import ringing_alarm as alarm
 
 conn = pymysql.connect(host='localhost', user='root', password='miso1004', db = 'ms_project', charset='utf8')
 cur = conn.cursor()
 cur.execute("set @@global.sql_mode = 'ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'")
 conn.commit()
 
-font_dirs = ['/usr/share/fonts/truetype/nanum',]
-font_files = fm.findSystemFonts(fontpaths=font_dirs)
-font_list = fm.createFontList(font_files)
-fm.fontManager.ttflist.extend(font_list)
+font_dirs = ['/usr/share/fonts/truetype/nanum']
+font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
+for font_file in font_files:
+    font_manager.fontManager.addfont(font_file)
+
 
 mpl.rcParams['font.family'] = 'NanumGothic'
 
@@ -93,7 +93,8 @@ class LoginScreen(QDialog):
                 self.error.setText("로그인 정보가 올바르지 않습니다")
                 
         else:
-            result='2222'
+            cur.execute("select 비밀번호 from 교수 where 교수번호={}".format(user))
+            result = cur.fetchone()[0]
 
             if str(result) == str(password):
                 main = MainScreen2(user)
@@ -110,7 +111,6 @@ class MainScreen2(QDialog):
         cur.execute("select * from 교수 where 교수번호={}".format(user))
         prof = cur.fetchone()
         self.user = user
-        #num name rank major
         self.name = prof[1]
         self.rank = prof[2]
         self.major = prof[3]
@@ -180,11 +180,7 @@ class MainScreen2(QDialog):
         self.label_bronze_2.setObjectName("label_bronze_2")
                 
         self.pushButton_5.clicked.connect(self.show_sq_data)
-        
-        #생도졸음내역_학년별통계
         self.pushButton_4.clicked.connect(self.show_rank_view)
-        
-        #생도졸음내역_학년별통계
         self.pushButton_2.clicked.connect(self.show_view_data)
         
       
@@ -192,7 +188,7 @@ class MainScreen2(QDialog):
         s_date = self.dateEdit.date().toString('yyyy-MM-dd')
         e_date = self.dateEdit_2.date().toString('yyyy-MM-dd')
         
-        cur.execute("select 생도.중대, avg(점수.점수) from 점수, 수강, 과목, 생도 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 생도.교번=수강.교번 and 점수.최종여부=1 and 점수.날짜>='{}' and 점수.날짜<='{}' group by(생도.중대)".format(s_date, e_date))
+        cur.execute("select 생도.중대, format(avg(점수.점수),2) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 점수.최종여부=1 and 점수.날짜>='{}' and 점수.날짜<='{}' group by(생도.중대)".format(s_date, e_date))
         data1 = cur.fetchall()
         
         self.tableWidget_5.setRowCount(len(data1))
@@ -208,29 +204,35 @@ class MainScreen2(QDialog):
             scores=[]
             for i in data1:
                 subjects.append(i[0])
-        
-                scores.append(i[1])
+                scores.append(float(i[1]))
 
-        
-            
-            colors=['C3','C1','yellow','C9','C0','C4','C6','C5','C7']
+
+            colors=['red','orange','yellow','green','dodgerblue','navy','blueviolet','darkgrey']
             self.MplWidget_3.canvas.axes.clear()
             bar = self.MplWidget_3.canvas.axes.bar(subjects, scores, color=colors, width=0.4)
             self.MplWidget_3.canvas.axes.set_ylim([min(scores)-20, 100])
             for rect in bar:
                 height = rect.get_height()
-                self.MplWidget_3.canvas.axes.text(rect.get_x()+rect.get_width()/2.0, height, '%.2f' % height, ha='center', va='bottom', size=12)
+                self.MplWidget_3.canvas.axes.text(rect.get_x()+rect.get_width()/2.0, height, '%.2f' % height, ha='center', va='bottom', size=10)
 
             self.MplWidget_3.canvas.draw()
             
-          
-        
         
     def show_view_data(self):
-        rank = self.comboBox_11.currentText()[:-1]
-        sq = self.comboBox_13.currentText()[:-2]
+        rank = self.comboBox_11.currentText()
+        sq = self.comboBox_13.currentText()
         major = self.comboBox_14.currentText()
-        cur.execute("select 점수.날짜, 생도.기수, 생도.중대, 생도.이름, 생도.전공, 점수.점수 from 점수, 수강, 과목, 생도 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 생도.교번=수강.교번 and 생도.중대={} and 생도.기수={} and 생도.전공='{}' and 점수.최종여부=1 ORDER BY 점수.날짜 DESC, 생도.이름 DESC".format(sq,rank,major))
+        
+        cond=''
+        if rank!='전체':
+            cond+='and 생도.기수={} '.format(rank[:-1])
+        if sq!='전체':
+            cond+='and 생도.중대={} '.format(sq[:-2])
+        if major!='전체':
+            cond+="and 생도.전공='{}' ".format(major)
+        
+        query = "select 점수.날짜, 생도.기수, 생도.중대, 생도.이름, 생도.전공, 점수.점수 from 점수,수강,과목,생도 where 수강.교번=생도.교번 and 수강.과목코드=과목.과목코드 and 점수.수강번호=수강.수강번호 and 점수.최종여부=1 {}order by 점수.날짜 DESC, 생도.이름 DESC".format(cond)
+        cur.execute(query)
         data2 = cur.fetchall()
         
         self.tableWidget_2.setRowCount(len(data2))
@@ -240,7 +242,6 @@ class MainScreen2(QDialog):
                 self.tableWidget_2.item(i, j).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
                 
                 
-        
     def show_rank_view(self):
         year = self.comboBox_10.currentText()[:-1]
         month = self.comboBox_9.currentText()[:-1]
@@ -249,13 +250,10 @@ class MainScreen2(QDialog):
         
         if len(month)==1:
             month='0'+month
-        
         if rank=='전':
-            cur.execute("select 생도.기수, 생도.이름, 생도.전공, avg(점수.점수) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.이름)".format(sq,year, month))
-
-        
+            cur.execute("select 생도.기수, 생도.이름, 생도.전공, format(avg(점수.점수),2) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.이름)".format(sq,year, month))
         else:
-            cur.execute("select 생도.기수, 생도.이름, 생도.전공, avg(점수.점수) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and 생도.기수={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.이름)".format(sq,rank,year, month))
+            cur.execute("select 생도.기수, 생도.이름, 생도.전공, format(avg(점수.점수),2) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and 생도.기수={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.이름)".format(sq,rank,year, month))
         data3 = cur.fetchall()
         
         self.tableWidget_6.setRowCount(len(data3))
@@ -263,6 +261,34 @@ class MainScreen2(QDialog):
             for j, item in enumerate(line):
                 self.tableWidget_6.setItem(i, j, QTableWidgetItem(str(item)))
                 self.tableWidget_6.item(i, j).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+
+
+        if rank=='전':
+            cur.execute("select 생도.기수, format(avg(점수.점수),2) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.기수)".format(sq,year,month))
+        else:
+            cur.execute("select 생도.기수, format(avg(점수.점수),2) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and 생도.기수={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.기수)".format(sq,rank,year,month))
+        data4 = cur.fetchall()
+
+        if data4==():
+            self.MplWidget_2.canvas.axes.clear()
+        else:
+            rk=[]
+            scores=[]
+            for i in data4:
+                rk.append(str(i[0])+'기')
+                scores.append(float(i[1]))
+
+            colors=['red','yellow','dodgerblue']
+            self.MplWidget_2.canvas.axes.clear()
+            bar = self.MplWidget_2.canvas.axes.bar(rk, scores, color=colors, width=0.4)
+            self.MplWidget_2.canvas.axes.set_ylim([min(scores)-20, 100])
+            for rect in bar:
+                height = rect.get_height()
+                self.MplWidget_2.canvas.axes.text(rect.get_x()+rect.get_width()/2.0, height, '%.2f' % height, ha='center', va='bottom', size=10)
+
+            self.MplWidget_2.canvas.draw()
+    
+    
     def view_best3(self):
         year = self.comboBox.currentText()[:-1]
         mon = self.comboBox_2.currentText()[:-1]
@@ -486,13 +512,12 @@ class MainScreen(QDialog):
         for i,t in enumerate(time_table):
             if now>=t[0] and now<=t[1]:
                 c_time=i+1
-        c_time=1
+                
+        if c_time=='-':
+            QMessageBox.warning(self, 'NO CLASS', "현재 수업시간이 아닙니다!")
+        else:
+            self.label_22.setText("{}요일  {}교시".format(w_day, c_time))
 
-        self.label_22.setText("{}요일  {}교시".format(w_day, c_time))
-        self.label_23.setText("-")
-        self.label_24.setText("-")
-
-        if c_time!='-':
             wct=w_day+str(c_time)
             cur.execute("select 과목.교과명,교수.이름,수강.수강번호 from 과목,수강,교수 where 수강.과목코드=과목.과목코드 and 교수.교수번호=과목.교수번호 and 수강.교번={} and 과목.수업시간 like '%{}%'".format(self.user, wct))
             subject = cur.fetchone()
@@ -500,22 +525,27 @@ class MainScreen(QDialog):
                 self.label_23.setText(subject[0])
                 self.label_24.setText("({} 교수님)".format(subject[1]))
                 self.label_4.setText(str(subject[2]))
-        
-        self.label_25.setText("나의 졸음 0회")
-        self.label_11.setText('90')
-        self.update_score('','',0)
-
+                self.label_25.setText("나의 졸음 0회")
+                self.label_11.setText('90')
+                self.update_score('','',0)
+            else:
+                self.label_23.setText("-")
+                self.label_24.setText("-")
+                
 
     def end_class(self):
-        self.update_score('','',2)
-        self.stream_thread.stop()
-        self.update_button_style()
-        self.label_22.clear()
-        self.label_23.clear()
-        self.label_24.clear()
-        self.label_25.clear()
-        self.textEdit.clear()
-        self.tableWidget_3.setRowCount(0)
+        if self.label_4.text()=='':
+            QMessageBox.warning(self, 'NO CLASS', "종료할 수업이 없습니다")
+        else:
+            self.update_score('','',2)
+            self.stream_thread.stop()
+            self.update_button_style()
+            self.label_22.clear()
+            self.label_23.clear()
+            self.label_24.clear()
+            self.label_25.clear()
+            self.textEdit.clear()
+            self.tableWidget_3.setRowCount(0)
     
     @QtCore.pyqtSlot(str)
     def print_on_screen(self, text):
@@ -565,13 +595,19 @@ class MainScreen(QDialog):
     def change_password(self):
         new_pw = self.lineEdit_3.text()
         new_pw2 = self.lineEdit_4.text()
-        if new_pw == new_pw2:
-            cur.execute("update 생도 set 비밀번호='{}' where 교번={}".format(new_pw, self.user))
-            conn.commit()
-            QMessageBox.information(self, '비밀번호 변경 완료', '비밀번호 변경이 완료되었습니다!')
-
+        if new_pw=='' or new_pw2=='':
+            if new_pw=='':
+                QMessageBox.warning(self, '새 비밀번호 미입력', "새 비밀번호를 입력하세요")
+            else:
+                QMessageBox.warning(self, '새 비밀번호 확인 미입력', "새 비밀번호 확인을 입력하세요")
         else:
-            QMessageBox.warning(self, '비밀번호 오류', "비밀번호가 다릅니다")
+            if new_pw == new_pw2:
+                cur.execute("update 생도 set 비밀번호='{}' where 교번={}".format(new_pw, self.user))
+                conn.commit()
+                QMessageBox.information(self, '비밀번호 변경 완료', '비밀번호 변경이 완료되었습니다!')
+
+            else:
+                QMessageBox.warning(self, '비밀번호 오류', "비밀번호가 다릅니다")
     
     def show_month_graph(self):
         year = self.comboBox_10.currentText()[:-1]
@@ -745,7 +781,6 @@ class Stream_thread(QtCore.QThread):
         
         def init_message() :
             print("init_message")
-            #alarm.sound_alarm("init_sound.mp3")
 
         #Variables for detecting if user is asleep.
         EAR_CONSEC_FRAMES=20 
