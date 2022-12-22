@@ -1,0 +1,889 @@
+import sys
+from PyQt5.uic import loadUi
+from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import QDate, QTime, Qt
+
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvas as FigureCanvas
+from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
+from matplotlib.figure import Figure
+from mplwidget import MplWidget
+
+from scipy.spatial import distance as dist
+from imutils.video import VideoStream
+from imutils import face_utils
+from threading import Thread
+from threading import Timer
+
+import matplotlib as mpl
+import matplotlib.font_manager as fm
+import numpy as np
+import random
+import time
+import timeit
+import datetime
+import cv2
+import pymysql
+import imutils
+import dlib
+
+from check_cam_fps import check_fps
+import make_train_data as mtd
+import light_remover as lr
+import ringing_alarm as alarm
+
+conn = pymysql.connect(host='localhost', user='root', password='miso1004', db = 'ms_project', charset='utf8')
+cur = conn.cursor()
+cur.execute("set @@global.sql_mode = 'ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'")
+conn.commit()
+
+font_dirs = ['/usr/share/fonts/truetype/nanum',]
+font_files = fm.findSystemFonts(fontpaths=font_dirs)
+font_list = fm.createFontList(font_files)
+fm.fontManager.ttflist.extend(font_list)
+
+mpl.rcParams['font.family'] = 'NanumGothic'
+
+class WelcomeScreen(QDialog):
+    def __init__(self):
+        super(WelcomeScreen, self).__init__()
+        bglabel = QLabel(self)
+        pixmap = QPixmap('/home/pi/ms-project/GUI/image/welcome_sc_or.jpg')
+        bglabel.setPixmap(pixmap)
+        loadUi("welcomescreen.ui", self)
+        self.start.clicked.connect(self.gotologin)
+        
+    def gotologin(self):
+        login = LoginScreen()
+        widget.addWidget(login)
+        widget.setCurrentIndex(widget.currentIndex()+1)
+        
+
+class LoginScreen(QDialog):
+    def __init__(self):
+        super(LoginScreen, self).__init__()
+        bglabel2 = QLabel(self)
+        pixmap = QPixmap('/home/pi/ms-project/GUI/image/login_sc_or.jpg')
+        bglabel2.setPixmap(pixmap)
+        loadUi("login.ui", self)
+        self.passwordfield.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.login.clicked.connect(self.loginfunction)
+       
+    
+    def loginfunction(self):
+        user = self.idfield.text()
+        password = self.passwordfield.text()
+
+        if len(user)==0:
+            self.error.setText("아이디를 입력하세요!")
+        elif len(password)==0:
+            self.error.setText("비밀번호를 입력하세요!")
+            
+        elif str(user).startswith("751"):
+            cur.execute("select 비밀번호 from 생도 where 교번={}".format(user))
+            result = cur.fetchone()[0]
+
+            if str(result) == str(password):
+                main = MainScreen(user)
+                widget.addWidget(main)
+                widget.setCurrentIndex(widget.currentIndex()+1)
+            else:
+                self.error.setText("로그인 정보가 올바르지 않습니다")
+                
+        else:
+            result='2222'
+
+            if str(result) == str(password):
+                main = MainScreen2(user)
+                widget.addWidget(main)
+                widget.setCurrentIndex(widget.currentIndex()+1)
+            else:
+                self.error.setText("로그인 정보가 올바르지 않습니다")
+
+
+#######교수mainscreen########
+class MainScreen2(QDialog):
+    
+    def __init__(self, user):
+        cur.execute("select * from 교수 where 교수번호={}".format(user))
+        prof = cur.fetchone()
+        self.user = user
+        #num name rank major
+        self.name = prof[1]
+        self.rank = prof[2]
+        self.major = prof[3]
+        
+        super(MainScreen2, self).__init__()
+        loadUi("main4.ui", self)
+        
+        label_user = QLabel(self)
+        label_user.setGeometry(QtCore.QRect(60, 20, 111, 111))
+        label_user.resize(110, 110)
+        pixmap = QPixmap('/home/pi/ms-project/GUI/image/user (2).png')
+        label_user.setPixmap(pixmap)
+        label_user.setScaledContents(True)
+        
+        self.label_14.setText("{} {}".format(self.name, self.rank))
+        self.label_15.setText("{} 교수".format(self.major))
+        
+        self.bt_cadetzzz.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_1))
+        self.bt_bestworst.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_3))
+        self.bt_change.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_4))
+        
+        
+        self.pushButton_best3.clicked.connect(self.view_best3)
+        self.pushButton_worst3.clicked.connect(self.view_worst3)
+        
+        self.label_gold = QtWidgets.QLabel(self.page_3)
+        self.label_gold.setGeometry(QtCore.QRect(40, 180, 70, 70))
+        self.label_gold.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_gold.setText("")
+        self.label_gold.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/gold-medal.png"))
+        self.label_gold.setScaledContents(True)
+        
+        self.label_silver = QtWidgets.QLabel(self.page_3)
+        self.label_silver.setGeometry(QtCore.QRect(40, 280, 70, 70))
+        self.label_silver.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_silver.setText("")
+        self.label_silver.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/silver-medal.png"))
+        self.label_silver.setScaledContents(True)
+        self.label_silver.setObjectName("label_silver")
+        self.label_bronze = QtWidgets.QLabel(self.page_3)
+        self.label_bronze.setGeometry(QtCore.QRect(40, 380, 70, 70))
+        self.label_bronze.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_bronze.setText("")
+        self.label_bronze.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/bronze.png"))
+        self.label_bronze.setScaledContents(True)
+        self.label_bronze.setObjectName("label_bronze")
+        self.label_gold_2 = QtWidgets.QLabel(self.page_3)
+        self.label_gold_2.setGeometry(QtCore.QRect(530, 180, 70, 70))
+        self.label_gold_2.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_gold_2.setText("")
+        self.label_gold_2.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/gold-medal.png"))
+        self.label_gold_2.setScaledContents(True)
+        self.label_gold_2.setObjectName("label_gold_2")
+        self.label_silver_2 = QtWidgets.QLabel(self.page_3)
+        self.label_silver_2.setGeometry(QtCore.QRect(530, 280, 70, 70))
+        self.label_silver_2.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_silver_2.setText("")
+        self.label_silver_2.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/silver-medal.png"))
+        self.label_silver_2.setScaledContents(True)
+        self.label_silver_2.setObjectName("label_silver_2")
+        self.label_bronze_2 = QtWidgets.QLabel(self.page_3)
+        self.label_bronze_2.setGeometry(QtCore.QRect(530, 380, 70, 70))
+        self.label_bronze_2.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_bronze_2.setText("")
+        self.label_bronze_2.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/bronze.png"))
+        self.label_bronze_2.setScaledContents(True)
+        self.label_bronze_2.setObjectName("label_bronze_2")
+                
+        self.pushButton_5.clicked.connect(self.show_sq_data)
+        
+        #생도졸음내역_학년별통계
+        self.pushButton_4.clicked.connect(self.show_rank_view)
+        
+        #생도졸음내역_학년별통계
+        self.pushButton_2.clicked.connect(self.show_view_data)
+        
+      
+    def show_sq_data(self):
+        s_date = self.dateEdit.date().toString('yyyy-MM-dd')
+        e_date = self.dateEdit_2.date().toString('yyyy-MM-dd')
+        
+        cur.execute("select 생도.중대, avg(점수.점수) from 점수, 수강, 과목, 생도 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 생도.교번=수강.교번 and 점수.최종여부=1 and 점수.날짜>='{}' and 점수.날짜<='{}' group by(생도.중대)".format(s_date, e_date))
+        data1 = cur.fetchall()
+        
+        self.tableWidget_5.setRowCount(len(data1))
+        for i, line in enumerate(data1):
+            for j, item in enumerate(line):
+                self.tableWidget_5.setItem(i, j, QTableWidgetItem(str(item)))
+                self.tableWidget_5.item(i, j).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+
+        if data1==():
+            self.MplWidget_3.canvas.axes.clear()
+        else:
+            subjects=[]
+            scores=[]
+            for i in data1:
+                subjects.append(i[0])
+        
+                scores.append(i[1])
+
+        
+            
+            colors=['C3','C1','yellow','C9','C0','C4','C6','C5','C7']
+            self.MplWidget_3.canvas.axes.clear()
+            bar = self.MplWidget_3.canvas.axes.bar(subjects, scores, color=colors, width=0.4)
+            self.MplWidget_3.canvas.axes.set_ylim([min(scores)-20, 100])
+            for rect in bar:
+                height = rect.get_height()
+                self.MplWidget_3.canvas.axes.text(rect.get_x()+rect.get_width()/2.0, height, '%.2f' % height, ha='center', va='bottom', size=12)
+
+            self.MplWidget_3.canvas.draw()
+            
+          
+        
+        
+    def show_view_data(self):
+        rank = self.comboBox_11.currentText()[:-1]
+        sq = self.comboBox_13.currentText()[:-2]
+        major = self.comboBox_14.currentText()
+        cur.execute("select 점수.날짜, 생도.기수, 생도.중대, 생도.이름, 생도.전공, 점수.점수 from 점수, 수강, 과목, 생도 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 생도.교번=수강.교번 and 생도.중대={} and 생도.기수={} and 생도.전공='{}' and 점수.최종여부=1 ORDER BY 점수.날짜 DESC, 생도.이름 DESC".format(sq,rank,major))
+        data2 = cur.fetchall()
+        
+        self.tableWidget_2.setRowCount(len(data2))
+        for i, line in enumerate(data2):
+            for j, item in enumerate(line):
+                self.tableWidget_2.setItem(i, j, QTableWidgetItem(str(item)))
+                self.tableWidget_2.item(i, j).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+                
+                
+        
+    def show_rank_view(self):
+        year = self.comboBox_10.currentText()[:-1]
+        month = self.comboBox_9.currentText()[:-1]
+        sq = self.comboBox_12.currentText()[:-2]
+        rank = self.comboBox_15.currentText()[:-1]
+        
+        if len(month)==1:
+            month='0'+month
+        
+        if rank=='전':
+            cur.execute("select 생도.기수, 생도.이름, 생도.전공, avg(점수.점수) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.이름)".format(sq,year, month))
+
+        
+        else:
+            cur.execute("select 생도.기수, 생도.이름, 생도.전공, avg(점수.점수) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and 생도.기수={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.이름)".format(sq,rank,year, month))
+        data3 = cur.fetchall()
+        
+        self.tableWidget_6.setRowCount(len(data3))
+        for i, line in enumerate(data3):
+            for j, item in enumerate(line):
+                self.tableWidget_6.setItem(i, j, QTableWidgetItem(str(item)))
+                self.tableWidget_6.item(i, j).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+    def view_best3(self):
+        year = self.comboBox.currentText()[:-1]
+        mon = self.comboBox_2.currentText()[:-1]
+        if len(mon)==1:
+            mon='0'+mon
+        cur.execute("select 생도.전공, 생도.기수, 생도.중대, 생도.이름, avg(점수.점수) from 점수,수강,과목,생도 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 수강.교번=생도.교번 and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by 수강.교번 order by avg(점수.점수) desc".format(year,mon))
+        result = cur.fetchall()
+        
+        if result==():
+            self.label_30.setText('')
+            self.label_31.setText('조회 결과 없음')
+            self.label_32.setText('')
+        else:
+            self.label_30.setText('{} {}.{}.{}  {:.2f}점'.format(result[0][0],result[0][1],result[0][2],result[0][3],result[0][4]))
+            self.label_31.setText('{} {}.{}.{}  {:.2f}점'.format(result[1][0],result[1][1],result[1][2],result[1][3],result[1][4]))
+            self.label_32.setText('{} {}.{}.{}  {:.2f}점'.format(result[2][0],result[2][1],result[2][2],result[2][3],result[2][4]))
+        
+    
+    def view_worst3(self):
+        year = self.comboBox_4.currentText()[:-1]
+        mon = self.comboBox_5.currentText()[:-1]
+        if len(mon)==1:
+            mon='0'+mon
+        cur.execute("select 생도.전공, 생도.기수, 생도.중대, 생도.이름, avg(점수.점수) from 점수,수강,과목,생도 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 수강.교번=생도.교번 and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by 수강.교번 order by avg(점수.점수)".format(year,mon))
+        result = cur.fetchall()
+        
+        if result==():
+            self.label_33.setText('')
+            self.label_34.setText('조회 결과 없음')
+            self.label_35.setText('')
+        else:
+            self.label_33.setText('{} {}.{}.{}  {:.2f}점'.format(result[0][0],result[0][1],result[0][2],result[0][3],result[0][4]))
+            self.label_34.setText('{} {}.{}.{}  {:.2f}점'.format(result[1][0],result[1][1],result[1][2],result[1][3],result[1][4]))
+            self.label_35.setText('{} {}.{}.{}  {:.2f}점'.format(result[2][0],result[2][1],result[2][2],result[2][3],result[2][4]))    
+                
+
+
+class MainScreen(QDialog):
+        
+    def __init__(self, user):
+        
+        cur.execute("select * from 생도 where 교번={}".format(user))
+        cadet = cur.fetchone()
+        self.user = user
+        self.rank = cadet[1]
+        self.sq = cadet[2]
+        self.name = cadet[3]
+        self.major = cadet[4]
+
+        super(MainScreen, self).__init__()
+        loadUi("main3.ui", self)
+    
+        label_user = QLabel(self)
+        label_user.setGeometry(QtCore.QRect(60, 20, 111, 111))
+        label_user.resize(110, 110)
+        pixmap = QPixmap('/home/pi/ms-project/GUI/image/user (2).png')
+        label_user.setPixmap(pixmap)
+        label_user.setScaledContents(True)
+        
+        label_point = QLabel(self)
+        label_point.setGeometry(QtCore.QRect(508, 47, 45, 45))
+        label_point.resize(45, 45)
+        pixmap = QPixmap('/home/pi/ms-project/GUI/image/coin (1).png')
+        label_point.setPixmap(pixmap)
+        label_point.setScaledContents(True)
+        
+        self.label_14.setText("{} 생도".format(self.name))
+        self.label_15.setText("{}기 {}중대 {}".format(self.rank, self.sq, self.major))
+        
+        self.show_time()
+
+        #self.addToolBar(NavigationToolbar(self.MplWidget.canvas, self))
+
+        #self.bt_home.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page))
+        self.bt_mypage.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_1))
+        self.bt_class.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_2))
+        self.bt_bestworst.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_3))
+        self.bt_change.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_4))
+        #self.bt_logout.clicked.connect()
+
+        self.pushButton_3.clicked.connect(self.change_password)
+        
+        #수업듣기
+        self.pushButton_start_class.clicked.connect(self.start_class)
+        self.pushButton_end_class.clicked.connect(self.end_class)
+        #self.absence=False
+        self.init_properties()
+        self.init_connections()
+        self.score=90
+        self.sleep_count=0
+
+        
+        #마이페이지-기간조회
+        self.pushButton_view.clicked.connect(self.view_data)
+        
+        #마이페이지-월별통계
+        self.pushButton_4.clicked.connect(self.show_month_graph)
+        
+        #마이페이지-전체통계
+        cur.execute("select 과목.교과명 from 수강,과목 where 수강.과목코드=과목.과목코드 and 교번={}".format(self.user))
+        subjects = cur.fetchall()
+        for sub in subjects:
+            self.comboBox_20.addItem(sub[0])
+        self.pushButton_8.clicked.connect(self.show_graph)
+        
+        #마이페이지-세부내역
+        self.tableWidget_2.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        cur.execute("select 과목.교과명 from 수강,과목 where 수강.과목코드=과목.과목코드 and 교번={}".format(self.user))
+        subjects = cur.fetchall()
+        for sub in subjects:
+            self.comboBox_11.addItem(sub[0])
+        self.pushButton_2.clicked.connect(self.load_table)
+            
+        #명예의 전당
+        self.pushButton_best3.clicked.connect(self.view_best3)
+        self.pushButton_worst3.clicked.connect(self.view_worst3)
+        
+        self.label_gold = QtWidgets.QLabel(self.page_3)
+        self.label_gold.setGeometry(QtCore.QRect(40, 180, 70, 70))
+        self.label_gold.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_gold.setText("")
+        self.label_gold.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/gold-medal.png"))
+        self.label_gold.setScaledContents(True)
+        
+        self.label_silver = QtWidgets.QLabel(self.page_3)
+        self.label_silver.setGeometry(QtCore.QRect(40, 280, 70, 70))
+        self.label_silver.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_silver.setText("")
+        self.label_silver.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/silver-medal.png"))
+        self.label_silver.setScaledContents(True)
+        self.label_silver.setObjectName("label_silver")
+        self.label_bronze = QtWidgets.QLabel(self.page_3)
+        self.label_bronze.setGeometry(QtCore.QRect(40, 380, 70, 70))
+        self.label_bronze.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_bronze.setText("")
+        self.label_bronze.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/bronze.png"))
+        self.label_bronze.setScaledContents(True)
+        self.label_bronze.setObjectName("label_bronze")
+        self.label_gold_2 = QtWidgets.QLabel(self.page_3)
+        self.label_gold_2.setGeometry(QtCore.QRect(530, 180, 70, 70))
+        self.label_gold_2.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_gold_2.setText("")
+        self.label_gold_2.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/gold-medal.png"))
+        self.label_gold_2.setScaledContents(True)
+        self.label_gold_2.setObjectName("label_gold_2")
+        self.label_silver_2 = QtWidgets.QLabel(self.page_3)
+        self.label_silver_2.setGeometry(QtCore.QRect(530, 280, 70, 70))
+        self.label_silver_2.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_silver_2.setText("")
+        self.label_silver_2.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/silver-medal.png"))
+        self.label_silver_2.setScaledContents(True)
+        self.label_silver_2.setObjectName("label_silver_2")
+        self.label_bronze_2 = QtWidgets.QLabel(self.page_3)
+        self.label_bronze_2.setGeometry(QtCore.QRect(530, 380, 70, 70))
+        self.label_bronze_2.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.label_bronze_2.setText("")
+        self.label_bronze_2.setPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/bronze.png"))
+        self.label_bronze_2.setScaledContents(True)
+        self.label_bronze_2.setObjectName("label_bronze_2")
+        
+        
+    def init_properties(self):
+        self.stream_thread = Stream_thread()
+        
+    def init_connections(self):
+        self.stream_thread.change_pixmap.connect(self.image_label.setPixmap)
+        self.start_stop_btn.clicked.connect(self.run_stop_video_streaming)
+        self.stream_thread.send_data.connect(self.print_on_screen)
+        self.stream_thread.send_data2.connect(self.update_score)
+        self.stream_thread.sleep_signal.connect(self.sleepcount)
+
+    
+    @QtCore.pyqtSlot(bool)
+    def run_stop_video_streaming(self):
+        
+        if self.start_stop_btn.isChecked():
+            self.stream_thread.start()    
+            self.update_button_style()
+            self.textEdit.setPlainText("졸음인식 준비중입니다. 잠시만 기다려주세요.")
+        else:
+            self.stream_thread.stop()
+            self.update_button_style()
+    
+    def update_button_style(self):
+        if self.start_stop_btn.isChecked():
+            icon_stop = QtGui.QIcon()
+            icon_stop.addPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/stop_video.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            self.start_stop_btn.setIcon(icon_stop)
+            self.start_stop_btn.setStyleSheet("border: 2px solid red; border-radius: 7px;")
+        else:
+            icon_run = QtGui.QIcon()
+            icon_run.addPixmap(QtGui.QPixmap("/home/pi/ms-project/GUI/image/run_video.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            self.start_stop_btn.setIcon(icon_run)
+            self.start_stop_btn.setStyleSheet("border: none solid blue; border-radius: 7px;")
+
+
+    def show_time(self):
+        wd = ['월','화','수','목','금','토','일']
+        now = datetime.datetime.now()
+        w_day = wd[now.weekday()]
+        self.label_17.setText("{}({})".format(now.strftime('%Y.%m.%d'), w_day))
+        self.label_21.setText(now.strftime('%H:%M:%S'))
+
+        # 타이머 설정 (1초마다, 콜백함수)
+        timer = Timer(1, self.show_time)
+        timer.start()
+
+    
+    def start_class(self):
+        wd = ['월','화','수','목','금','토','일']
+        now = datetime.datetime.now()
+        w_day = wd[now.weekday()]
+        
+        time_table = [(now.replace(hour=8,minute=20,second=0,microsecond=0),now.replace(hour=9,minute=10,second=0,microsecond=0)),
+                      (now.replace(hour=9,minute=15,second=0,microsecond=0),now.replace(hour=10,minute=5,second=0,microsecond=0)),
+                      (now.replace(hour=10,minute=15,second=0,microsecond=0),now.replace(hour=11,minute=5,second=0,microsecond=0)),
+                      (now.replace(hour=11,minute=10,second=0,microsecond=0),now.replace(hour=12,minute=0,second=0,microsecond=0)),
+                      (now.replace(hour=13,minute=0,second=0,microsecond=0),now.replace(hour=13,minute=50,second=0,microsecond=0)),
+                      (now.replace(hour=14,minute=0,second=0,microsecond=0),now.replace(hour=14,minute=50,second=0,microsecond=0))]
+        c_time='-'
+        for i,t in enumerate(time_table):
+            if now>=t[0] and now<=t[1]:
+                c_time=i+1
+        c_time=1
+
+        self.label_22.setText("{}요일  {}교시".format(w_day, c_time))
+        self.label_23.setText("-")
+        self.label_24.setText("-")
+
+        if c_time!='-':
+            wct=w_day+str(c_time)
+            cur.execute("select 과목.교과명,교수.이름,수강.수강번호 from 과목,수강,교수 where 수강.과목코드=과목.과목코드 and 교수.교수번호=과목.교수번호 and 수강.교번={} and 과목.수업시간 like '%{}%'".format(self.user, wct))
+            subject = cur.fetchone()
+            if subject!=None:
+                self.label_23.setText(subject[0])
+                self.label_24.setText("({} 교수님)".format(subject[1]))
+                self.label_4.setText(str(subject[2]))
+        
+        self.label_25.setText("나의 졸음 0회")
+        self.label_11.setText('90')
+        self.update_score('','',0)
+
+
+    def end_class(self):
+        self.update_score('','',2)
+        self.stream_thread.stop()
+        self.update_button_style()
+        self.label_22.clear()
+        self.label_23.clear()
+        self.label_24.clear()
+        self.label_25.clear()
+        self.textEdit.clear()
+        self.tableWidget_3.setRowCount(0)
+    
+    @QtCore.pyqtSlot(str)
+    def print_on_screen(self, text):
+        self.textEdit.setPlainText(text)
+    
+    @QtCore.pyqtSlot()
+    def sleepcount(self):
+        self.sleep_count+=1
+        self.label_25.setText("나의 졸음 {}회".format(self.sleep_count))
+    
+    @QtCore.pyqtSlot(str, int, int)
+    def update_score(self, reason, dcnt, status):
+        now = datetime.datetime.now()
+        date = now.strftime('%Y-%m-%d')
+        time = now.strftime('%H:%M:%S')
+        w_day = self.label_22.text()[0]
+        ctime = int(self.label_22.text()[5])
+        cnum = int(self.label_4.text())
+        sc_id = int(self.user[3:] + str(now.year)[2:]+now.strftime('%m%d')+now.strftime('%H%M%S'))
+        
+        if status==0:
+            score=90
+            final=0
+        elif status==1:
+            score=self.score-1
+            self.score=score
+            final=0
+        else:
+            score=self.score
+            final=1
+
+        numrows = self.tableWidget_3.rowCount()
+        self.tableWidget_3.setRowCount(numrows+1)
+        line = [time, reason, str(dcnt), str(score)]
+        for i,j in enumerate(line):
+            self.tableWidget_3.setItem(numrows, i, QTableWidgetItem(j))
+            self.tableWidget_3.item(numrows, i).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+        
+        cur.execute("insert into 점수 values ({}, '{}', '{}', {}, '{}', {}, '{}', '{}', {}, {})"
+                    .format(sc_id, date, w_day, ctime, time, cnum, reason, dcnt, score, final))
+        conn.commit()
+        
+        self.label_11.setText(str(self.score))
+
+        
+
+    def change_password(self):
+        new_pw = self.lineEdit_3.text()
+        new_pw2 = self.lineEdit_4.text()
+        if new_pw == new_pw2:
+            cur.execute("update 생도 set 비밀번호='{}' where 교번={}".format(new_pw, self.user))
+            conn.commit()
+            QMessageBox.information(self, '비밀번호 변경 완료', '비밀번호 변경이 완료되었습니다!')
+
+        else:
+            QMessageBox.warning(self, '비밀번호 오류', "비밀번호가 다릅니다")
+    
+    def show_month_graph(self):
+        year = self.comboBox_10.currentText()[:-1]
+        month = self.comboBox_9.currentText()[:-1]
+        if len(month)==1:
+            month='0'+month
+        cur.execute("select 과목.교과명, avg(점수.점수) from 점수,수강,과목 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 and 수강.교번={} group by(과목.교과명)".format(year, month, self.user))
+        result = cur.fetchall()
+        
+        if result==():
+            self.MplWidget_2.canvas.axes.clear()
+        else:
+            subjects=[]
+            scores=[]
+            for i in result:
+                subjects.append(i[0])
+                scores.append(i[1])
+            
+            colors=['C3','C1','yellow','C2','C9','C0','C4','C6','C5','C7']
+            self.MplWidget_2.canvas.axes.clear()
+            bar = self.MplWidget_2.canvas.axes.bar(subjects, scores, color=colors, width=0.4)
+            self.MplWidget_2.canvas.axes.set_ylim([min(scores)-20, 100])
+            
+            for rect in bar:
+                height = rect.get_height()
+                self.MplWidget_2.canvas.axes.text(rect.get_x()+rect.get_width()/2.0, height, '%.2f' % height, ha='center', va='bottom', size=12)
+
+            self.MplWidget_2.canvas.draw()
+            
+            cur.execute("select avg(점수.점수) from 점수,수강,과목 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 and 수강.교번={}"
+                        .format(year, month, self.user))
+            avg_score = cur.fetchone()[0]
+            self.label_20.setText("{}월 평균 : {:.2f}점".format(month, avg_score))
+            
+            
+    def show_graph(self):
+        sub = self.comboBox_20.currentText()
+        cur.execute("select date_format(점수.날짜,'%m') as m, avg(점수.점수) from 점수,수강,과목 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 수강.교번={} and 과목.교과명='{}' group by m"
+                    .format(self.user, sub))
+        result = cur.fetchall()
+        
+        months=[]
+        scores=[]
+        for i in result:
+            months.append(i[0]+'월')
+            scores.append(i[1])
+        
+            self.MplWidget_5.canvas.axes.clear()
+        line_graph = self.MplWidget_5.canvas.axes.plot(months, scores, 'o-')
+        self.MplWidget_5.canvas.axes.set_ylim([min(scores)-10, 100])
+        
+        for i in range(len(months)):
+            height = scores[i]
+            self.MplWidget_5.canvas.axes.text(months[i], float(height)+0.25, '%.2f' %height, ha='center', va='bottom', size = 12)
+            
+        self.MplWidget_5.canvas.draw()
+    
+    
+    def view_data(self):
+        s_date = self.dateEdit.date().toString('yyyy-MM-dd')
+        e_date = self.dateEdit_2.date().toString('yyyy-MM-dd')
+        
+        cur.execute("select 점수.날짜, 점수.교시, 과목.교과명, 점수.점수 from 점수,수강,과목 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 수강.교번={} and 점수.최종여부=1 and 날짜>='{}' and 날짜<='{}' order by 점수.날짜, 점수.교시"
+                    .format(self.user, s_date, e_date))
+        data = cur.fetchall()
+        
+        self.tableWidget_5.setRowCount(len(data))
+        for i, line in enumerate(data):
+            for j, item in enumerate(line):
+                self.tableWidget_5.setItem(i, j, QTableWidgetItem(str(item)))
+                self.tableWidget_5.item(i, j).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+
+    
+    def load_table(self):
+        subject = self.comboBox_11.currentText()
+        cur.execute("select 수강.수강번호 from 수강,과목 where 수강.과목코드=과목.과목코드 and 수강.교번={} and 과목.교과명='{}'".format(self.user, subject))
+        num_tc = cur.fetchone()[0]
+        cur.execute("select 날짜,교시,date_format(시각,'%H:%i'),사유,가감,점수 from 점수 where 수강번호={} and 최종여부=0".format(num_tc))
+        contents = cur.fetchall()
+        
+        self.tableWidget_2.setRowCount(len(contents))
+        for i, line in enumerate(contents):
+            for j,item  in enumerate(line):
+                self.tableWidget_2.setItem(i, j, QTableWidgetItem(str(item)))
+                self.tableWidget_2.item(i, j).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+    
+    
+    def view_best3(self):
+        year = self.comboBox.currentText()[:-1]
+        mon = self.comboBox_2.currentText()[:-1]
+        if len(mon)==1:
+            mon='0'+mon
+        cur.execute("select 생도.전공, 생도.기수, 생도.중대, 생도.이름, avg(점수.점수) from 점수,수강,과목,생도 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 수강.교번=생도.교번 and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by 수강.교번 order by avg(점수.점수) desc".format(year,mon))
+        result = cur.fetchall()
+        
+        if result==():
+            self.label_30.setText('')
+            self.label_31.setText('조회 결과 없음')
+            self.label_32.setText('')
+        else:
+            self.label_30.setText('{} {}.{}.{}  {:.2f}점'.format(result[0][0],result[0][1],result[0][2],result[0][3],result[0][4]))
+            self.label_31.setText('{} {}.{}.{}  {:.2f}점'.format(result[1][0],result[1][1],result[1][2],result[1][3],result[1][4]))
+            self.label_32.setText('{} {}.{}.{}  {:.2f}점'.format(result[2][0],result[2][1],result[2][2],result[2][3],result[2][4]))
+        
+    
+    def view_worst3(self):
+        year = self.comboBox_4.currentText()[:-1]
+        mon = self.comboBox_5.currentText()[:-1]
+        if len(mon)==1:
+            mon='0'+mon
+        cur.execute("select 생도.전공, 생도.기수, 생도.중대, 생도.이름, avg(점수.점수) from 점수,수강,과목,생도 where 점수.수강번호=수강.수강번호 and 수강.과목코드=과목.과목코드 and 수강.교번=생도.교번 and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by 수강.교번 order by avg(점수.점수)".format(year,mon))
+        result = cur.fetchall()
+        
+        if result==():
+            self.label_33.setText('')
+            self.label_34.setText('조회 결과 없음')
+            self.label_35.setText('')
+        else:
+            self.label_33.setText('{} {}.{}.{}  {:.2f}점'.format(result[0][0],result[0][1],result[0][2],result[0][3],result[0][4]))
+            self.label_34.setText('{} {}.{}.{}  {:.2f}점'.format(result[1][0],result[1][1],result[1][2],result[1][3],result[1][4]))
+            self.label_35.setText('{} {}.{}.{}  {:.2f}점'.format(result[2][0],result[2][1],result[2][2],result[2][3],result[2][4]))
+
+
+class Stream_thread(QtCore.QThread):
+    change_pixmap = QtCore.pyqtSignal(QtGui.QPixmap)
+    send_data = QtCore.pyqtSignal(str)
+    send_data2 = QtCore.pyqtSignal(str, int, int)
+    sleep_signal = QtCore.pyqtSignal()
+    OPEN_EAR=0
+    EAR_THRESH=0
+    
+    def __init__(self):
+        super().__init__()
+    
+    def run(self):
+        
+        def eye_aspect_ratio(eye):
+            A = dist.euclidean(eye[1], eye[5])
+            B = dist.euclidean(eye[2], eye[4])
+            C = dist.euclidean(eye[0], eye[3])
+            ear = (A+B) / (2.0*C)
+            return ear
+
+        def init_open_ear():
+            time.sleep(5)
+            print("open init time sleep")
+            self.send_data.emit("EAR 측정 - 눈을 떠주세요")
+            ear_list = []
+            for i in range(7):
+                ear_list.append(both_ear)
+                time.sleep(1)
+            self.OPEN_EAR = sum(ear_list)/len(ear_list)
+            print("open list =", ear_list, "\nOPEN_EAR =", self.OPEN_EAR, "\n")
+        
+        def init_close_ear(): 
+            time.sleep(2)
+            th_open.join()
+            time.sleep(5)
+            print("close init time sleep")
+            self.send_data.emit("EAR 측정 - 눈을 감아주세요")
+            ear_list=[]
+            time.sleep(1)
+            for i in range(7):
+                ear_list.append(both_ear)
+                time.sleep(1)
+            CLOSE_EAR = sum(ear_list)/len(ear_list)
+            self.EAR_THRESH = (((self.OPEN_EAR-CLOSE_EAR)/2)+CLOSE_EAR)
+            print("close list =", ear_list, "\nCLOSE_EAR =", CLOSE_EAR, "\n")
+            print("The last EAR_THRESH's value :",self.EAR_THRESH, "\n")
+            self.send_data.emit("EAR THRESH = {}".format(self.EAR_THRESH))
+        
+        def init_message() :
+            print("init_message")
+            #alarm.sound_alarm("init_sound.mp3")
+
+        #Variables for detecting if user is asleep.
+        EAR_CONSEC_FRAMES=20 
+        COUNTER=0
+
+        #When the alarm rings, measure the time eyes are being closed.
+        closed_eyes_time=[]
+        TIMER_FLAG=False
+        ALARM_FLAG=False
+
+        #When the alarm is rang, count the number of times it is rang, and prevent the alarm from ringing continuously.
+        ALARM_COUNT=0
+        RUNNING_TIME=0
+        
+        #We should count the time eyes are being opened for data labeling.
+        PREV_TERM=0
+
+        #Variables for trained data generation and calculation fps.
+        np.random.seed(9)
+        power, nomal, short = mtd.start(25)
+        test_data = []
+        result_data = []
+        prev_time = 0
+
+        #Detect face & eyes.
+        print("loading facial landmark predictor...")
+        detector = dlib.get_frontal_face_detector()
+        predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+
+        (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
+        (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+        
+        print("starting video stream thread...")
+        vs = VideoStream(src=0).start()
+        time.sleep(1.0)
+        
+        th_open = Thread(target=init_open_ear)
+        th_open.deamon = True
+        th_open.start()
+        th_close = Thread(target=init_close_ear)
+        th_close.deamon = True
+        th_close.start()
+           
+        self.thread_is_active = True
+        while self.thread_is_active:
+            frame = vs.read()
+            #frame = imutils.resize(frame, width=400)
+            
+            L, gray = lr.light_removing(frame)
+            rects = detector(gray,0)
+            
+            for rect in rects:
+                shape = predictor(gray, rect)
+                shape = face_utils.shape_to_np(shape)
+                                
+                leftEye = shape[lStart:lEnd]
+                rightEye = shape[rStart:rEnd]
+                leftEAR = eye_aspect_ratio(leftEye)
+                rightEAR = eye_aspect_ratio(rightEye)
+            
+                both_ear = (leftEAR + rightEAR)*500
+
+                leftEyeHull = cv2.convexHull(leftEye)
+                rightEyeHull = cv2.convexHull(rightEye)
+                cv2.drawContours(frame, [leftEyeHull], -1, (0,255,0), 1)
+                cv2.drawContours(frame, [rightEyeHull], -1, (0,255,0), 1)
+                
+                if both_ear < self.EAR_THRESH:
+                    if not TIMER_FLAG:
+                        start_closing = timeit.default_timer()
+                        TIMER_FLAG=True
+                    COUNTER+=1
+
+                    if COUNTER >= EAR_CONSEC_FRAMES:
+
+                        mid_closing = timeit.default_timer()
+                        closing_time = round((mid_closing-start_closing),3)
+
+                        if closing_time >= RUNNING_TIME:
+                            if RUNNING_TIME == 0:
+                                CUR_TERM = timeit.default_timer()
+                                OPENED_EYES_TIME = round((CUR_TERM - PREV_TERM),3)
+                                PREV_TERM = CUR_TERM
+                                RUNNING_TIME = 1.75
+
+                            RUNNING_TIME += 2
+                            ALARM_FLAG = True
+                            ALARM_COUNT += 1
+
+                            self.send_data.emit("졸음 {}회 - 잠 깨세요!".format(ALARM_COUNT))
+                            self.send_data2.emit('졸음',-1, 1)
+                            self.sleep_signal.emit()
+                            print("{0}st ALARM".format(ALARM_COUNT))
+                            print("The time eyes is being opened before the alarm went off :", OPENED_EYES_TIME)
+                            print("closing time :", closing_time)
+                            test_data.append([OPENED_EYES_TIME, round(closing_time*10,3)])
+                            result = mtd.run([OPENED_EYES_TIME, closing_time*10], power, nomal, short)
+                            result_data.append(result)
+
+                else :
+                    COUNTER = 0
+                    TIMER_FLAG = False
+                    RUNNING_TIME = 0
+
+                    if ALARM_FLAG :
+                        end_closing = timeit.default_timer()
+                        closed_eyes_time.append(round((end_closing-start_closing),3))
+                        print("The time eyes were being offed :", closed_eyes_time)
+
+                    ALARM_FLAG = False
+
+                cv2.putText(frame, "EAR : {:.2f}".format(both_ear), (300,130), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200,30,20), 2)
+               
+            height, width, _ = frame.shape
+            qt_image = QtGui.QImage(frame.data,width,height,frame.strides[0],QtGui.QImage.Format_RGB888)
+            pic = qt_image.scaled(500, 500, QtCore.Qt.KeepAspectRatio)
+            pixmap = QtGui.QPixmap.fromImage(pic)
+            self.change_pixmap.emit(pixmap)
+                
+    def stop(self):
+        self.thread_is_active = False
+        self.quit()
+        pixmap = QtGui.QPixmap('/home/pi/ms-project/GUI/image/user (2).png')
+        self.change_pixmap.emit(pixmap)
+        
+
+#main
+app = QApplication(sys.argv)
+welcome = WelcomeScreen()
+widget = QtWidgets.QStackedWidget()
+widget.addWidget(welcome)
+widget.setFixedHeight(800)
+widget.setFixedWidth(1200)
+widget.show()
+
+try:
+    sys.exit(app.exec_())
+except:
+    print("Exiting")
+
+
