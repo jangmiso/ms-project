@@ -231,7 +231,7 @@ class MainScreen2(QDialog):
         if major!='전체':
             cond+="and 생도.전공='{}' ".format(major)
         
-        query = "select 점수.날짜, 생도.기수, 생도.중대, 생도.이름, 생도.전공, 점수.점수 from 점수,수강,과목,생도 where 수강.교번=생도.교번 and 수강.과목코드=과목.과목코드 and 점수.수강번호=수강.수강번호 and 점수.최종여부=1 {}order by 점수.날짜 DESC, 생도.이름 DESC".format(cond)
+        query = "select 점수.날짜, 점수.교시, 과목.교과명, 생도.기수, 생도.중대, 생도.이름, 생도.전공, 점수.점수 from 점수,수강,과목,생도 where 수강.교번=생도.교번 and 수강.과목코드=과목.과목코드 and 점수.수강번호=수강.수강번호 and 점수.최종여부=1 {}order by 점수.날짜 DESC, 점수.교시, 생도.기수, 생도.교번".format(cond)
         cur.execute(query)
         data2 = cur.fetchall()
         
@@ -251,9 +251,9 @@ class MainScreen2(QDialog):
         if len(month)==1:
             month='0'+month
         if rank=='전':
-            cur.execute("select 생도.기수, 생도.이름, 생도.전공, format(avg(점수.점수),2) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.이름)".format(sq,year, month))
+            cur.execute("select 생도.기수, 생도.이름, 생도.전공, format(avg(점수.점수),2) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.이름) order by 생도.기수, 생도.교번".format(sq,year, month))
         else:
-            cur.execute("select 생도.기수, 생도.이름, 생도.전공, format(avg(점수.점수),2) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and 생도.기수={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.이름)".format(sq,rank,year, month))
+            cur.execute("select 생도.기수, 생도.이름, 생도.전공, format(avg(점수.점수),2) from 점수, 수강, 생도 where 점수.수강번호=수강.수강번호 and 생도.교번=수강.교번 and 생도.중대={} and 생도.기수={} and date_format(점수.날짜,'%Y-%m')='{}-{}' and 점수.최종여부=1 group by(생도.이름) order by 생도.기수, 생도.교번".format(sq,rank,year, month))
         data3 = cur.fetchall()
         
         self.tableWidget_6.setRowCount(len(data3))
@@ -920,5 +920,3 @@ try:
     sys.exit(app.exec_())
 except:
     print("Exiting")
-
-
