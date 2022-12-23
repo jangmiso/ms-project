@@ -59,7 +59,7 @@ font: 57 11pt &quot;Noto Sans CJK HK Medium&quot;;</string>
     <number>0</number>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="page_1">
     <widget class="QTabWidget" name="tabWidget">
@@ -84,7 +84,7 @@ QTabWidget::pane{border:0;}
 </string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="usesScrollButtons">
       <bool>true</bool>
@@ -235,7 +235,7 @@ background-color:rgb(255, 255, 255)</string>
         <bool>true</bool>
        </attribute>
        <attribute name="horizontalHeaderDefaultSectionSize">
-        <number>150</number>
+        <number>154</number>
        </attribute>
        <attribute name="horizontalHeaderHighlightSections">
         <bool>true</bool>
@@ -263,34 +263,6 @@ background-color:rgb(255, 255, 255)</string>
          <height>431</height>
         </rect>
        </property>
-       <widget class="QLabel" name="label_21">
-        <property name="geometry">
-         <rect>
-          <x>180</x>
-          <y>10</y>
-          <width>201</width>
-          <height>41</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>PibotoLt</family>
-          <pointsize>16</pointsize>
-          <weight>75</weight>
-          <italic>false</italic>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 255);</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
       </widget>
      </widget>
      <widget class="QWidget" name="tab_2">
@@ -442,47 +414,6 @@ background-color:rgb(255, 255, 255)</string>
          <height>431</height>
         </rect>
        </property>
-       <widget class="QLabel" name="label_20">
-        <property name="geometry">
-         <rect>
-          <x>100</x>
-          <y>10</y>
-          <width>201</width>
-          <height>41</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>PibotoLt</family>
-          <pointsize>16</pointsize>
-          <weight>75</weight>
-          <italic>false</italic>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 255);</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_9">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>411</width>
-          <height>421</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
       </widget>
       <widget class="QComboBox" name="comboBox_12">
        <property name="geometry">
@@ -624,7 +555,7 @@ background-color:rgb(255, 255, 255)</string>
         <number>64</number>
        </attribute>
        <attribute name="horizontalHeaderDefaultSectionSize">
-        <number>110</number>
+        <number>114</number>
        </attribute>
        <attribute name="horizontalHeaderHighlightSections">
         <bool>true</bool>
@@ -756,7 +687,7 @@ background-color:rgb(255, 255, 255)</string>
         <bool>true</bool>
        </attribute>
        <attribute name="horizontalHeaderDefaultSectionSize">
-        <number>145</number>
+        <number>111</number>
        </attribute>
        <attribute name="horizontalHeaderHighlightSections">
         <bool>true</bool>
@@ -767,6 +698,16 @@ background-color:rgb(255, 255, 255)</string>
        <column>
         <property name="text">
          <string>날짜</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>교시</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>과목</string>
         </property>
        </column>
        <column>
@@ -1201,49 +1142,6 @@ background-color: rgba(255, 255, 255, 0);</string>
       </property>
      </item>
     </widget>
-    <widget class="QComboBox" name="comboBox_3">
-     <property name="geometry">
-      <rect>
-       <x>250</x>
-       <y>110</y>
-       <width>86</width>
-       <height>30</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 29 14pt &quot;Noto Sans CJK HK DemiLight&quot;;</string>
-     </property>
-     <item>
-      <property name="text">
-       <string>-</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>1주</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2주</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>3주</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>4주</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>5주</string>
-      </property>
-     </item>
-    </widget>
     <widget class="QComboBox" name="comboBox_4">
      <property name="geometry">
       <rect>
@@ -1350,49 +1248,6 @@ background-color: rgba(255, 255, 255, 0);</string>
       </property>
      </item>
     </widget>
-    <widget class="QComboBox" name="comboBox_6">
-     <property name="geometry">
-      <rect>
-       <x>740</x>
-       <y>110</y>
-       <width>86</width>
-       <height>30</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 29 14pt &quot;Noto Sans CJK HK DemiLight&quot;;</string>
-     </property>
-     <item>
-      <property name="text">
-       <string>-</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>1주</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2주</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>3주</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>4주</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>5주</string>
-      </property>
-     </item>
-    </widget>
     <widget class="QLabel" name="label_30">
      <property name="geometry">
       <rect>
@@ -1405,9 +1260,9 @@ background-color: rgba(255, 255, 255, 0);</string>
      <property name="font">
       <font>
        <pointsize>14</pointsize>
-       <weight>75</weight>
-       <italic>true</italic>
-       <bold>true</bold>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
      </property>
      <property name="styleSheet">
@@ -1415,7 +1270,7 @@ background-color: rgba(255, 255, 255, 0);</string>
 background-color: rgba(255, 255, 255, 0);</string>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:400; font-style:normal;&quot;&gt;##기 #중대 ##과 ㅇㅇㅇ ###점&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_31">
@@ -1430,9 +1285,9 @@ background-color: rgba(255, 255, 255, 0);</string>
      <property name="font">
       <font>
        <pointsize>14</pointsize>
-       <weight>75</weight>
-       <italic>true</italic>
-       <bold>true</bold>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
      </property>
      <property name="styleSheet">
@@ -1440,7 +1295,7 @@ background-color: rgba(255, 255, 255, 0);</string>
 background-color: rgba(255, 255, 255, 0);</string>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:400; font-style:normal;&quot;&gt;##기 #중대 ##과 ㅇㅇㅇ ###점&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_32">
@@ -1455,9 +1310,9 @@ background-color: rgba(255, 255, 255, 0);</string>
      <property name="font">
       <font>
        <pointsize>14</pointsize>
-       <weight>75</weight>
-       <italic>true</italic>
-       <bold>true</bold>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
      </property>
      <property name="styleSheet">
@@ -1465,7 +1320,7 @@ background-color: rgba(255, 255, 255, 0);</string>
 background-color: rgba(255, 255, 255, 0);</string>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:400; font-style:normal;&quot;&gt;##기 #중대 ##과 ㅇㅇㅇ ###점&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_33">
@@ -1480,9 +1335,9 @@ background-color: rgba(255, 255, 255, 0);</string>
      <property name="font">
       <font>
        <pointsize>14</pointsize>
-       <weight>75</weight>
-       <italic>true</italic>
-       <bold>true</bold>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
      </property>
      <property name="styleSheet">
@@ -1490,7 +1345,7 @@ background-color: rgba(255, 255, 255, 0);</string>
 background-color: rgba(255, 255, 255, 0);</string>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:400; font-style:normal;&quot;&gt;##기 #중대 ##과 ㅇㅇㅇ ###점&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_34">
@@ -1505,9 +1360,9 @@ background-color: rgba(255, 255, 255, 0);</string>
      <property name="font">
       <font>
        <pointsize>14</pointsize>
-       <weight>75</weight>
-       <italic>true</italic>
-       <bold>true</bold>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
      </property>
      <property name="styleSheet">
@@ -1515,7 +1370,7 @@ background-color: rgba(255, 255, 255, 0);</string>
 background-color: rgba(255, 255, 255, 0);</string>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:400; font-style:normal;&quot;&gt;##기 #중대 ##과 ㅇㅇㅇ ###점&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_35">
@@ -1530,9 +1385,9 @@ background-color: rgba(255, 255, 255, 0);</string>
      <property name="font">
       <font>
        <pointsize>14</pointsize>
-       <weight>75</weight>
-       <italic>true</italic>
-       <bold>true</bold>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
      </property>
      <property name="styleSheet">
@@ -1540,7 +1395,7 @@ background-color: rgba(255, 255, 255, 0);</string>
 background-color: rgba(255, 255, 255, 0);</string>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:400; font-style:normal;&quot;&gt;##기 #중대 ##과 ㅇㅇㅇ ###점&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_gold">
@@ -1559,7 +1414,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/gold-medal.png</pixmap>
+      <pixmap>:/icon/디자인/gold-medal.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1581,7 +1436,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/silver-medal.png</pixmap>
+      <pixmap>:/icon/디자인/silver-medal.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1603,7 +1458,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/bronze.png</pixmap>
+      <pixmap>:/icon/디자인/bronze.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1625,7 +1480,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/gold-medal.png</pixmap>
+      <pixmap>:/icon/디자인/gold-medal.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1647,7 +1502,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/silver-medal.png</pixmap>
+      <pixmap>:/icon/디자인/silver-medal.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1669,7 +1524,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="myres.qrc">:/icon/디자인/bronze.png</pixmap>
+      <pixmap>:/icon/디자인/bronze.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -2035,7 +1890,7 @@ padding: 10px;</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap resource="myres.qrc">:/icon/디자인/user (2).png</pixmap>
+     <pixmap>:/icon/디자인/user (2).png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -2085,7 +1940,7 @@ padding: 10px;</string>
     <property name="geometry">
      <rect>
       <x>1000</x>
-      <y>30</y>
+      <y>90</y>
       <width>171</width>
       <height>41</height>
      </rect>
@@ -2099,30 +1954,11 @@ font: 29 16pt &quot;Noto Sans CJK HK DemiLight&quot;;
      <string>비밀번호 변경</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="bt_logout">
-    <property name="geometry">
-     <rect>
-      <x>1000</x>
-      <y>90</y>
-      <width>171</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color:rgb(255, 255, 255);
-font: 29 16pt &quot;Noto Sans CJK HK DemiLight&quot;;
-</string>
-    </property>
-    <property name="text">
-     <string>로그아웃</string>
-    </property>
-   </widget>
    <zorder>topbg</zorder>
    <zorder>label_14</zorder>
    <zorder>label_user</zorder>
    <zorder>label_15</zorder>
    <zorder>bt_change</zorder>
-   <zorder>bt_logout</zorder>
   </widget>
  </widget>
  <customwidgets>
